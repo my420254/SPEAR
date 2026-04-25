@@ -1,13 +1,4 @@
-"""
-ECPE 论文最终版 v12 (终极满配版 - 绝对安全隔离)
-===================
-目标精度: ~77.22%
 
-安全保证: 
-  - ABL_woBiaffine 消融实验被放置在执行队列的最末尾。
-  - 新增的 MLP 模块仅在运行此特定消融时才实例化，绝对不干扰原版随机数轨迹。
-  - 自动跳过已完成的实验，统一汇总落盘。
-"""
 
 import os, sys, gc, logging, csv, time, json, random, math, argparse, glob
 import numpy as np
