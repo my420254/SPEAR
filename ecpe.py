@@ -18,7 +18,7 @@ warnings.filterwarnings("ignore")
 def parse_args():
     p = argparse.ArgumentParser()
     p.add_argument("--gpu",     type=str, default="1",
-                   help="必须用跑出 77.46% 的那张卡，默认卡1")
+                   help="默认卡1")
     p.add_argument("--out_dir", type=str, default="./paper_run",
                    help="固定输出目录，支持断点续跑")
     return p.parse_args()
