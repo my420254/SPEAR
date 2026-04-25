@@ -1018,7 +1018,6 @@ def main():
     logger.info("╔══════════════════════════════════════════════════════════╗")
     logger.info(f"║  ECPE 论文最终版 v12 (加 w/o Biaffine) GPU={ARGS.gpu}        ║")
     logger.info(f"║  主实验: DoRA(rank=4) + SpanRepr + RDrop               ║")
-    logger.info(f"║  目标精度: ~77.46%  (固定 pos_weight, 无 AdaPW)        ║")
     logger.info(f"║  实验总数: {len(EXPERIMENTS):2d} × 10折  输出: {OUT_DIR:<20} ║")
     logger.info("╚══════════════════════════════════════════════════════════╝")
 
