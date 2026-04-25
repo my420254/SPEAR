@@ -67,18 +67,4 @@ python create_image.py
 - `significance_dotplot.pdf`: 模型改进的置信区间 (95% CI) 与显著性检验点图。
 - `tsne_visualization.pdf`: 情感与原因特征解耦的 T-SNE 可视化 (仅需主实验落盘 `.npz` 数据)。
 
-## 📊 主要实验结果 (Main Results)
-
-在基准 ECPE 数据集 (10折交叉验证) 上，SPEAR 表现出了优越的性能：
-
-| 模型变体 | Precision (%) | Recall (%) | F1 Score (%) |
-| :--- | :---: | :---: | :---: |
-| RoBERTa + Biaffine (Base) | - | - | 基线指标 |
-| **SPEAR (Ours)** | **~** | **~** | **~77.22** |
-
-*(详细指标请运行代码后参阅自动生成的 `table1_main.json` 及 `table2_ablation.csv`)*
-
-**统计显著性测试：**
-脚本内置非参数 Wilcoxon 符号秩检验。运行完毕后会在 `figures/significance.json` 中明确列出模型相较于基线（如纯 Biaffine 或 w/o RDrop）的性能提升是否满足 $p < 0.05$。
-
 
