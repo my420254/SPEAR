@@ -3,7 +3,7 @@
 
 # SPEAR: Decoupled Biaffine Scoring with Span-Aware Representations and Consistency Regularisation for Emotion-Cause Pair Extraction
 
-本仓库包含了论文 **"SPEAR: Decoupled Biaffine Scoring with Span-Aware Representations and Consistency Regularisation for Emotion-Cause Pair Extraction"** 的官方 PyTorch 实现代码。该论文已被定为向 *Information Processing & Management (IPM)* 期刊提交的候选稿件。
+本仓库包含了论文 **"SPEAR: Decoupled Biaffine Scoring with Span-Aware Representations and Consistency Regularisation for Emotion-Cause Pair Extraction"** 的官方 PyTorch 实现代码。
 
 ## 📌 项目概述 (Overview)
 
