@@ -1,67 +1,71 @@
-# SPEAR: Decoupled Biaffine Scoring with Span-Aware Representations and Consistency Regularisation for Emotion-Cause Pair Extraction
+# SPEAR：面向情绪原因对抽取的 Span-Aware 关系建模框架
 
-## 中文项目介绍
+SPEAR 是一套面向情绪原因对抽取（Emotion-Cause Pair Extraction, ECPE）的结构化 NLP 框架，当前按 **Knowledge-Based Systems（KBS）** 投稿版本整理。项目聚焦文档级情绪子句与原因子句的联合识别和配对问题。
 
-SPEAR 是我围绕情绪原因对抽取（Emotion-Cause Pair Extraction, ECPE）完成的结构化 NLP 工作，当前按 **Knowledge-Based Systems（KBS）** 投稿材料组织。KBS 是知识工程、人工智能和智能系统方向的高影响力期刊，常见分区口径较高；最终状态以官方录用结果为准。
+ECPE 的目标是从一段文档中同时找出情绪子句、原因子句，并判断两者是否构成有效 emotion-cause pair。它比普通分类任务更难，因为模型需要同时解决局部语义识别、跨子句关系建模、稀疏正样本学习和解码约束。
 
-ECPE 的目标是从文档中同时识别情绪子句和对应原因子句，并正确配对。它比普通分类任务更难，因为模型不仅要判断“哪里有情绪、哪里有原因”，还要解决跨子句关系建模、稀疏正样本、远距离噪声和配对误判。
+## 研究问题
 
-## 核心方法
+ECPE 任务存在几个典型难点：
 
-- **Span-Aware Clause Encoder**：从 clause 内部 token 表示恢复细粒度边界和局部语义，避免只用粗粒度句向量导致线索损失。
-- **DoRA-based Biaffine Scorer**：用低秩稳定化的 biaffine 打分拆分 emotion/cause pair 建模，提高关系打分的表达能力和训练稳定性。
-- **R-Drop Consistency Regularisation**：通过两次 forward 的一致性约束，降低小数据结构化抽取中的过拟合和过度自信。
-- **Window-Constrained Decoding**：利用情绪和原因通常局部相关的先验，过滤不合理长距离候选，提升 precision。
+- pair 候选数量随 clause 数量平方增长，负样本远多于正样本；
+- 情绪和原因可能跨句出现，关系边界容易混淆；
+- 中文文档数据规模较小，模型容易过拟合；
+- 只用粗粒度 clause 表示会丢失内部 token 线索；
+- 高 recall 和高 precision 之间存在明显取舍。
 
-## 面试展示重点
+SPEAR 的设计目标是在轻量模型规模下提升关系打分稳定性，并通过结构化解码减少不合理候选。
 
-- **任务含金量**：ECPE 是典型文档级结构化抽取任务，比句子分类更考验表示学习、关系建模和解码设计。
-- **方法组合能力**：把 span 表示、biaffine scoring、DoRA 参数化、R-Drop 正则和先验解码结合成完整 pipeline。
-- **实验表现**：在中文 ECPE benchmark 严格 10-fold cross validation 下达到 **77.24% F1**，相对前序强 baseline 提升 **0.87**。
-- **工程完整性**：包含主训练评测脚本、图表生成脚本、fold 数据、消融和显著性检验支持。
-- **可讲难点**：正负样本极不平衡、pair 数量随 clause 数平方增长、跨句关系容易误配、小数据过拟合、precision 和 recall 的取舍。
+## 方法设计
 
-## 技术关键词
+### Span-Aware Clause Encoder
 
-`PyTorch` · `NLP` · `ECPE` · `Biaffine` · `DoRA` · `R-Drop` · `Document-level Extraction` · `Structured Prediction`
+通过 clause 内部 token 表示恢复细粒度语义线索，避免只使用粗粒度句向量导致局部证据丢失。
 
-This repository contains the official PyTorch implementation of **SPEAR**, a lightweight ECPE framework.
+### DoRA-Based Biaffine Scorer
 
-## What this work solves
+使用 DoRA 思路稳定 biaffine 关系打分，将 emotion/cause pair 的关系建模从简单拼接分类提升为更强的双向交互打分。
 
-Emotion-Cause Pair Extraction is a structural extraction task where precision matters more than parameter count.
+### R-Drop Consistency Regularisation
 
-The main failure modes are:
+通过两次 forward 的一致性约束降低小数据结构化抽取中的过拟合和过度自信，使模型在稀疏正样本场景下更稳定。
 
-- over-coupled clause representations
-- weak boundary awareness
-- overconfident false positives on sparse data
+### Window-Constrained Decoding
 
-## Core idea
+引入情绪和原因通常局部相关的先验，过滤过远候选 pair，在降低误配的同时保持召回能力。
 
-SPEAR introduces four components:
+## 工程亮点
 
-- **Span-Aware Clause Encoder**: recovers token-level implicit cues inside each clause
-- **DoRA-based Biaffine Scorer**: separates emotion and cause scoring with a more stable low-rank parameterization
-- **R-Drop Regularisation**: penalizes inconsistent predictions across two forward passes
-- **Window-Constrained Decoding**: filters long-range noise with a locality prior
+- `ecpe.py` 覆盖训练、推理、评测、消融、敏感性分析和显著性检验；
+- 支持严格 10-fold cross validation；
+- 保存 fold-level 指标、训练曲线、敏感性分析和 t-SNE 可视化数据；
+- 代码中包含 `ECPE_Dataset`、`ECPE_Model`、`run_fold`、`run_sensitivity`、`significance_test` 等清晰模块；
+- 可导出论文表格和图表，便于复现与审计。
 
-## My contribution
+## 结果摘要
 
-- Designed the model and evaluation pipeline
-- Completed ablation, sensitivity, and significance testing
-- Generated the paper figures and supporting analysis
+在中文 ECPE benchmark 的严格 10-fold cross validation 设置下，SPEAR 达到 **77.24% F1**，相对前序强 baseline 提升 **0.87**。结果说明，span-aware 表示、biaffine scoring、DoRA 参数化和一致性正则的组合能够有效提升文档级 emotion-cause pair 抽取质量。
 
-## Main result
+## 仓库结构
 
-Under strict 10-fold cross validation on the Chinese ECPE benchmark, SPEAR reaches **77.24% F1**, improving the previous best baseline by **0.87 points**.
+| 文件 | 说明 |
+| --- | --- |
+| `ecpe.py` | 主训练、评测、消融、敏感性分析和显著性检验脚本 |
+| `create_image.py` | 图表生成脚本 |
+| `data/` | ECPE 10-fold 数据 |
+| `figures/` | 论文图表 |
+| `paper_run/` | 实验输出与中间结果 |
 
-## Repository contents
+## 运行方式
 
-- `ecpe.py`: training / evaluation / ablation / significance test runner
-- `create_image.py`: figure generation script
-- `data/`: ECPE folds
+```bash
+python ecpe.py --gpu 0 --out_dir ./paper_run
+```
 
-## Status
+脚本会按配置执行 10-fold 训练评测，并输出 fold-level 指标、聚合结果和补充分析文件。
 
-KBS submission version.
+## 项目状态
+
+- 论文状态：KBS 投稿版本；
+- 代码状态：训练评测、消融、敏感性分析、显著性检验和图表生成已整理；
+- 许可协议：MIT License。
